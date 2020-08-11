@@ -2,13 +2,14 @@ const irc = require('irc');
 const { exec, spawn } = require('child_process');
 const googleIt = require('google-it');
  
-const CHANNEL = "#codelove"
-
-
+// load NICK, PASSWORD, CHANNEL from .env 
 require('dotenv').config();
 
+const CHANNEL = process.env.CHANNEL || "#codelove"
+
+
 var client = new irc.Client(process.env.SERVER, process.env.NICK, {
-   channels: [process.env.CHANNEL],
+   channels: [CHANNEL],
    userName: process.env.NICK,
    password: process.env.PASSWORD,
    debug: true,
