@@ -49,7 +49,7 @@ client.addListener('registered',
 client.addListener('message', function(from, to, message) {
   console.log(from + ' => ' + to + ': ' + message);
 
-  if(message.startsWith("!g") || message.startsWith("gb3")){
+  if(message.startsWith("!g") || message.startsWith(client.nick)){
     handle_google(message, to, client);
   }
   else if(message.startsWith("^infrench")){
