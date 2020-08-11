@@ -64,26 +64,6 @@ client.addListener('message', function(from, to, message) {
       }
     });
   }
-  else if(message.startsWith("!FORTUNE")){
-    let s = message.split(' ')[1]
-    let lang = "fr"
-    if(s == "fr" || s == "es" || s == "ru" || s == "de" || s == "cs"){
-      lang = s ;
-    }
-    exec(`echo $(fortune ${lang} -s) | trans -brief`, (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        client.say(CHANNEL, err );
-        console.error(err)
-      } else {
-       // the *entire* stdout and stderr (buffered)
-       console.log(`stdout: ${stdout}`);
-       console.log(`stderr: ${stderr}`);
-       client.say(CHANNEL, stdout);
-
-      }
-    });
-  }
   else if(message.startsWith("!t")){
     message = message.replace(/-/g, '~');
     let s2 = message.split(' ');
