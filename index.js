@@ -66,12 +66,12 @@ client.addListener('message', function(from, to, message) {
   }
   else if(message.startsWith("!t")){
     message = message.replace(/-/g, '~');
-    let s2 = message.split(' ');
-    let s = message.split(' ').slice(1).join(' ');
+
+    let words = message.split(' ');
+    let s = words.slice(1).join(' ');
     
-    const patt = /^:[a-z]{2}$/
-    if(patt.test(s2[1])){
-      var child = spawn("trans", ["-brief", s2[1], s.slice(4)]);
+    if(/^:[a-z]{2}$/.test(words[1])){ 
+      var child = spawn("trans", ["-brief", words[1], s.slice(4)]);
     }
     else{
       var child = spawn("trans", ["-brief", s]);
