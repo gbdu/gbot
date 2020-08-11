@@ -15,7 +15,7 @@ var lastmsg = "";
 let commands = [
   {
     trigger: message => (message.startsWith("!g") ||
-                         message.startsWith(process.env.NICK || "gb3")),
+                         message.startsWith(client.nick)),
     handler: handle_google,
   },
   {
