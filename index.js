@@ -7,10 +7,9 @@ const CHANNEL = "#codelove"
 
 require('dotenv').config();
 
-var client = new irc.Client('irc.slashnet.org', 'gb3', {
-   channels: [CHANNEL],
-   nick: "gb3",
-   userName: "gb3",
+var client = new irc.Client(process.env.SERVER, process.env.NICK, {
+   channels: [process.env.CHANNEL],
+   userName: process.env.NICK,
    password: process.env.PASSWORD,
    debug: true,
    showErrors: true, }
