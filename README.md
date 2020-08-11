@@ -11,3 +11,4 @@ Commands:
 ## To Dos
 
 * Google image search with !gi
+* Fetch more results with !gg 
