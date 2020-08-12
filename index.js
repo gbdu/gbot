@@ -5,8 +5,7 @@ const googleIt = require('google-it');
 // load NICK, PASSWORD, CHANNEL from .env 
 require('dotenv').config();
 
-const CHANNEL = process.env.CHANNEL || "#codelove"
-
+const CHANNEL = process.env.CHANNEL || "#codelove";
 
 var client = new irc.Client(process.env.SERVER, process.env.NICK, {
    channels: [CHANNEL],
@@ -29,18 +28,19 @@ client.addListener('message', function(from, to, message) {
         
     googleIt({ query: s })
     .then(results => {
-      client.say(CHANNEL, results[0].title + " " + results[0].link)
+      client.say(to, results[0].title + " " + results[0].link)
+
     })
       .catch(e => {
         console.log("Error: " + e);
-        client.say(CHANNEL, e);
+        client.say(to, e);
       } );
   }
 
   if(message.startsWith("^infrench")){
     var child = spawn("trans", [":fr", "-brief", lastmsg]);
     child.stdout.on('data', data => {
-      client.say(CHANNEL, data.toString());
+      client.say(to, data.toString());
     });
   }
   
@@ -53,13 +53,13 @@ client.addListener('message', function(from, to, message) {
     exec(`fortune -a ${lang}`, (err, stdout, stderr) => {
       if (err) {
         //some err occurred
-        client.say(CHANNEL, err );
+        client.say(to, err );
         console.error(err)
       } else {
        // the *entire* stdout and stderr (buffered)
        console.log(`stdout: ${stdout}`);
        console.log(`stderr: ${stderr}`);
-       client.say(CHANNEL, stdout);
+       client.say(to, stdout);
 
       }
     });
@@ -79,7 +79,7 @@ client.addListener('message', function(from, to, message) {
 
     child.stdout.on('data', data => {
       // console.log(data.toString());
-      client.say(CHANNEL, data.toString());
+      client.say(to, data.toString());
     });
     
   }
