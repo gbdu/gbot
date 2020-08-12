@@ -35,15 +35,13 @@ client.addListener('message', function(from, to, message) {
         client.say(to, e);
       } );
   }
-
-  if(message.startsWith("^infrench")){
+  else if(message.startsWith("^infrench")){
     var child = spawn("trans", [":fr", "-brief", lastmsg]);
     child.stdout.on('data', data => {
       client.say(to, data.toString());
     });
   }
-  
-  if(message.startsWith("!fortune")){
+  else if(message.startsWith("!fortune")){
     let s = message.split(' ')[1]
     let lang = ""
     if(s == "fr" || s == "es" || s == "ru" || s == "de" || s == "cs"){
@@ -86,4 +84,9 @@ client.addListener('message', function(from, to, message) {
   lastmsg = message; 
 }  );
 
-
+client.addListener('join', function (channel, who){
+  client.say(channel, who);
+});
+client.addListener('error', function(message) {
+    console.log('error: ', message);
+});
