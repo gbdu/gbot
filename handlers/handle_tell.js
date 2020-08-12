@@ -1,4 +1,4 @@
-export default function handle_tell(db, message, to, from, client) {
+export default function handle_tell({db, message, to, from, client}) {
   let words = message.split(' ');
   var datetime = new Date();
   

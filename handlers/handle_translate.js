@@ -1,6 +1,6 @@
 import { exec, spawn } from 'child_process';
 
-export default function handle_translate(message, client){
+export default function handle_translate({message, client, to}){
   message = message.replace(/-/g, '~');
 
   let words = message.split(' ');

@@ -1,6 +1,6 @@
 import { exec, spawn } from 'child_process';
 
-export default function handle_fortune(client, to, message) {
+export default function handle_fortune({client, to, message}) {
   let s = message.split(' ')[1];
     let lang = ""
     if(s == "fr" || s == "es" || s == "ru" || s == "de" || s == "cs"){

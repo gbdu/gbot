@@ -1,39 +1,10 @@
-import irc from 'irc';
-
-import DataStore from 'nedb';
-import dotenv from 'dotenv';
 
 import handle_google from './handlers/handle_google';
 import handle_fortune from './handlers/handle_fortune';
 import handle_tell from './handlers/handle_tell';
 import handle_translate from './handlers/handle_translate';
 
-function init_config(){
-  return dotenv.config(); 
-}
-
-function init_db(){
-  // TODO error handling for db loading
-  var db = new DataStore({ filename: 'gb3.db', autoload: true });
-
-  // Use a unique constraint for the message to avoid duplicates
-  db.ensureIndex({ fieldName: 'content', unique: true });
-  return db;
-}
-
-function init_irc(){
-  // Setup irc client with info from .env
-  var client = new irc.Client(
-    process.env.SERVER || "irc.slashnet.org",
-    process.env.NICK || "gb3", {
-      channels: [process.env.CHANNELS] || ["#test"],
-      userName: process.env.NICK || "gb3",
-      password: process.env.PASSWORD,
-      debug: process.env.QUIET ? false : true,
-      showErrors: process.env.QUIET ? false : true, });
-
-  return client;
-}
+import {init_config, init_db, init_irc} from './init';
 
 var result = init_config();
 var db = init_db();
@@ -41,32 +12,35 @@ var client = init_irc();
 
 var lastmsg = "";
 
-client.addListener('registered',
-                   () => {
-                     client.say('tx', "I'm human... kinda");
-                   } );
+let commands = [
+  {
+    trigger: message => (message.startsWith("!g") ||
+                         message.startsWith(process.env.NICK || "gb3")),
+    handler: handle_google,
+  },
+  {
+    trigger: message => (message.startsWith("!fortune")),
+    handler: handle_fortune,
+  },
+  {
+    trigger: message => (message.startsWith("!tell")),
+    handler: handle_fortune,
+  },
+  {
+    trigger: message => (message.startsWith("!t")),
+    handler: handle_translate,
+  },
+  
+];
 
 client.addListener('message', function(from, to, message) {
-  console.log(from + ' => ' + to + ': ' + message);
+  if(!process.env.QUIET){
+    console.log(from + ' => ' + to + ': ' + message);
+  }
 
-  if(message.startsWith("!g") || message.startsWith("gb3")){
-    handle_google(message, to, client);
-  }
-  else if(message.startsWith("^infrench")){
-    var child = spawn("trans", [":fr", "-brief", lastmsg]);
-    child.stdout.on('data', data => {
-      client.say(to, data.toString());
-    });
-  }
-  else if(message.startsWith("!fortune")){
-    handle_fortune(client, to, message);
-  }  
-  else if(message.startsWith("!tell")){
-    handle_tell(db, message, to, from, client);
-  }
-  else if(message.startsWith("!t")){
-    handle_translate(message);
-  }
+  commands.forEach((c) => {
+    c.handler({from, to, message, db, client, lastmsg});
+  });
 
   lastmsg = message; 
 }  );
