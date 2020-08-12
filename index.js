@@ -83,7 +83,7 @@ client.addListener('message', function(from, to, message) {
           from: from,
           channel: to,
           to: words[1],
-          content: words[2],
+          content: words.slice(2).join(' '),
           time: datetime.toISOString().slice(0,10),
         };
 
