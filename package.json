@@ -9,14 +9,17 @@
     "irc": "^0.5.2",
     "nedb": "^1.8.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0",
+    "babel-register": "^6.26.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "repository": {
-  "type": "git",
-  "url": "https://github.com/gbdu/gbot.git"
+    "type": "git",
+    "url": "https://github.com/gbdu/gbot.git"
   }
 }

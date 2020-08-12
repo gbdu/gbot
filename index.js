@@ -1,46 +1,56 @@
-const irc = require('irc');
-const { exec, spawn } = require('child_process');
-const googleIt = require('google-it');
-const Datastore = require('nedb');
+import irc from 'irc';
 
-// load NICK, PASSWORD, CHANNEL from .env 
-require('dotenv').config();
+import DataStore from 'nedb';
+import dotenv from 'dotenv';
 
-var db = new Datastore({ filename: 'gb3.db', autoload: true });
+import handle_google from './handlers/handle_google';
+import handle_fortune from './handlers/handle_fortune';
+import handle_tell from './handlers/handle_tell';
+import handle_translate from './handlers/handle_translate';
 
-// Using a unique constraint with the index
-db.ensureIndex({ fieldName: 'content', unique: true }, function (err) {
-});
+function init_config(){
+  return dotenv.config(); 
+}
 
-var client = new irc.Client(process.env.SERVER, process.env.NICK, {
-  channels: [process.env.CHANNELS] || ["#codelove", "#test"],
-  userName: process.env.NICK,
-  password: process.env.PASSWORD,
-  debug: true,
-  showErrors: true, });
+function init_db(){
+  // TODO error handling for db loading
+  var db = new DataStore({ filename: 'gb3.db', autoload: true });
+
+  // Use a unique constraint for the message to avoid duplicates
+  db.ensureIndex({ fieldName: 'content', unique: true });
+  return db;
+}
+
+function init_irc(){
+  // Setup irc client with info from .env
+  var client = new irc.Client(
+    process.env.SERVER || "irc.slashnet.org",
+    process.env.NICK || "gb3", {
+      channels: [process.env.CHANNELS] || ["#test"],
+      userName: process.env.NICK || "gb3",
+      password: process.env.PASSWORD,
+      debug: process.env.QUIET ? false : true,
+      showErrors: process.env.QUIET ? false : true, });
+
+  return client;
+}
+
+var result = init_config();
+var db = init_db();
+var client = init_irc();
 
 var lastmsg = "";
 
-client.addListener('registered', () => {client.say('tx', "I'm human... kinda");} )
+client.addListener('registered',
+                   () => {
+                     client.say('tx', "I'm human... kinda");
+                   } );
 
 client.addListener('message', function(from, to, message) {
   console.log(from + ' => ' + to + ': ' + message);
 
   if(message.startsWith("!g") || message.startsWith("gb3")){
-    let s = message.split(' ').slice(1).join(' ');
-
-    googleIt({ query: s })
-      .then(results => {
-        client.say(to, results[0].title + " " + results[0].link)
-        if(message.startsWith("!gg")){
-          client.say(to, "Result 2: " + results[1].title + " " + results[1].link)
-          client.say(to, "Result 3: " + results[2].title + " " + results[2].link)  
-        }
-      })
-      .catch(e => {
-        console.log("Error: " + e);
-        client.say(to, e);
-      } );
+    handle_google(message, to, client);
   }
   else if(message.startsWith("^infrench")){
     var child = spawn("trans", [":fr", "-brief", lastmsg]);
@@ -49,72 +59,13 @@ client.addListener('message', function(from, to, message) {
     });
   }
   else if(message.startsWith("!fortune")){
-    let s = message.split(' ')[1]
-    let lang = ""
-    if(s == "fr" || s == "es" || s == "ru" || s == "de" || s == "cs"){
-      lang = s ;
-    }
-    exec(`fortune -a ${lang}`, (err, stdout, stderr) => {
-      if (err) {
-        //some err occurred
-        client.say(to, err );
-        console.error(err)
-      } else {
-       // the *entire* stdout and stderr (buffered)
-       console.log(`stdout: ${stdout}`);
-       console.log(`stderr: ${stderr}`);
-       client.say(to, stdout);
-
-      }
-    });
+    handle_fortune(client, to, message);
   }  
   else if(message.startsWith("!tell")){
-    let words = message.split(' ');
-    var datetime = new Date();
-    
-    db.count({}, function (err, count) {
-      if(count > 10){
-        client.say(to, "Message db full");
-      }
-      else if(words[1] && words[2]){
-        console.log(words[1].length);
-
-        var msg = {
-          from: from,
-          channel: to,
-          to: words[1],
-          content: words.slice(2).join(' '),
-          time: datetime.toISOString().slice(0,10),
-        };
-
-        db.insert(msg, function (err){
-          if(!err){
-            client.say(to, "Ok, I'll let them know.");
-          }
-        });
-
-      };
-    
-    });
+    handle_tell(db, message, to, from, client);
   }
   else if(message.startsWith("!t")){
-    message = message.replace(/-/g, '~');
-
-    let words = message.split(' ');
-    let s = words.slice(1).join(' ');
-    
-    if(/^:[a-z]{2}$/.test(words[1])){ 
-      var child = spawn("trans", ["-brief", words[1], s.slice(4)]);
-    }
-    else{
-      var child = spawn("trans", ["-brief", s]);
-    }
-
-    child.stdout.on('data', data => {
-      // console.log(data.toString());
-      client.say(to, data.toString());
-    });
-    
+    handle_translate(message);
   }
 
   lastmsg = message; 
