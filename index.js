@@ -27,7 +27,7 @@ let commands = [
     handler: handle_tell,
   },
   {
-    trigger: message => (message.startsWith("!t")),
+    trigger: message => (message.startsWith("!t") && !message.startsWith("!tell")),
     handler: handle_translate,
   },
   
@@ -39,7 +39,9 @@ client.addListener('message', function(from, to, message) {
   }
 
   commands.forEach((c) => {
-    c.handler({from, to, message, db, client, lastmsg});
+    if(c.trigger(message)){ 
+      c.handler({from, to, message, db, client, lastmsg});
+    }
   });
 
   lastmsg = message; 
