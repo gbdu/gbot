@@ -24,7 +24,7 @@ let commands = [
   },
   {
     trigger: message => (message.startsWith("!tell")),
-    handler: handle_fortune,
+    handler: handle_tell,
   },
   {
     trigger: message => (message.startsWith("!t")),
