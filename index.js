@@ -5,8 +5,6 @@ const googleIt = require('google-it');
 // load NICK, PASSWORD, CHANNEL from .env 
 require('dotenv').config();
 
-const CHANNELS = 
-
 var client = new irc.Client(process.env.SERVER, process.env.NICK, {
   channels: process.env.CHANNELS || ["#codelove", "#test"],
   userName: process.env.NICK,
