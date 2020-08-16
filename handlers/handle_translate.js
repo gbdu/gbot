@@ -1,19 +1,21 @@
 import { exec, spawn } from 'child_process';
 
 export default function handle_translate({message, client, to}){
-  message = message.replace(/-/g, '~');
-
   let words = message.split(' ');
-  let s = words.slice(1).join(' ');
-  
   
   try {
+    let lang, text
+
     if(/^:[a-z]{2}$/.test(words[1])){
-      var child = spawn("trans", ["-brief", words[1], s.slice(4)]);
+      lang = words[1]
+      text = words.slice(2)
     }
     else{
-      var child = spawn("trans", ["-brief", s]);
+      lang = ":en"
+      text = words.slice(1)
     }
+
+    let child = spawn("trans", ["-brief", lang, "--", text.join(' ')])
 
     child.on('error', err => {
       console.log(err);
