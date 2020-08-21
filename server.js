@@ -66,7 +66,7 @@ function add_module(filename) {
 }
 
 // Initialize watcher.
-const watcher = chokidar.watch('clients/', { persistent: true });
+// const watcher = chokidar.watch('clients/', { persistent: true });
 
 // // Add event listeners.
 // watcher
