@@ -1,6 +1,6 @@
 const ipc = require('node-ipc');
 const dotenv = require('dotenv');
-const chokidar = require('chokidar');
+// const chokidar = require('chokidar');
 
 const ps = require('child_process');
 const fs = require('fs');
