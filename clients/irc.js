@@ -24,11 +24,17 @@ function run_irc(world) {
 
     // * listener
     const lastmsg = '';
-    client.addListener('message', (from, to, message) => {
-        // log_msg(`${from} => ${to}: ${message}`);
-        // only send messages that start with ! to server
-        if (message.startsWith('!')) {
-            world.emit('!', { from, to, message });
+    client.addListener('raw', (m) => {
+        const message = {
+            from: m.nick,
+            from_host: m.host,
+            to: m.args[0],
+            message: m.args[1],
+
+        };
+
+        if (m.args[1] && message.message.startsWith('!')) {
+            world.emit('!', message);
         }
     });
 }

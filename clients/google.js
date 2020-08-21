@@ -41,7 +41,7 @@ ipc.connectToNet(
 
             ipc.of.world.emit('message', {
                 from: NICK,
-                to: '#codelove',
+                to: '#test',
                 message: 'Google module connected',
                 type: 'reply',
             });

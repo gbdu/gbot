@@ -13,6 +13,7 @@ const twitter = new Twitter({
 });
 
 const NICK = process.env.NICK || 'gb3';
+const DEBUG_CHAN = process.env.DEBUG_CHAN || '#test';
 
 ipc.config.id = NICK; // name the socket after the bot
 ipc.config.retry = 1500;
@@ -41,7 +42,7 @@ function handler(data) {
                 type: 'reply',
             });
         } else {
-            poll.set(data.from, data.message[1] == 'y' ? 1 : 0);
+            poll.set(data.from_host, data.message[1] == 'y' ? 1 : 0);
             ipc.of.world.emit('message', {
                 from: NICK,
                 to: data.to,
@@ -107,7 +108,7 @@ ipc.connectToNet(
 
             ipc.of.world.emit('message', {
                 from: NICK,
-                to: '#codelove',
+                to: DEBUG_CHAN,
                 message: 'Twitter module connected',
                 type: 'reply',
             });
