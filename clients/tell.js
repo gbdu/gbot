@@ -1,6 +1,7 @@
 const ipc = require('node-ipc');
 const dotenv = require('dotenv');
 const googleIt = require('google-it');
+const { duckIt } = require('node-duckduckgo');
 
 dotenv.config();
 
@@ -11,22 +12,7 @@ ipc.config.retry = 1500;
 
 // * Handles the action
 function handler(data) {
-    const s = data.message.split(' ').slice(1).join(' ');
 
-    googleIt({ query: s })
-        .then((results) => {
-            const out = `${results[0].title} ${results[0].link}`;
-
-            ipc.of.world.emit('message', {
-                from: NICK,
-                to: data.to,
-                message: out,
-                type: 'reply',
-            });
-        })
-        .catch((e) => {
-            console.log(`Error: ${e}`);
-        });
 }
 
 ipc.connectToNet(
@@ -40,7 +26,7 @@ ipc.connectToNet(
             ipc.of.world.emit('message', {
                 from: NICK,
                 to: '#test',
-                message: 'Google module connected',
+                message: 'DDG module connected',
                 type: 'reply',
             });
         }
