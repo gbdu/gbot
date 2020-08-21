@@ -5,7 +5,7 @@ const googleIt = require('google-it');
 dotenv.config();
 
 const NICK = process.env.NICK || 'gb3';
-const NICK = process.env.DEBUG_CHAN || '#test';
+const DEBUG_CHAN = process.env.DEBUG_CHAN || '#test';
 
 ipc.config.id = NICK; // name the socket after the bot
 ipc.config.retry = 1500;
