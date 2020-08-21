@@ -32,7 +32,7 @@ function handler(data) {
             type: 'reply',
         });
     }
-    if (data.message.startsWith('!yes') || data.message.startsWith('!no')) {
+    if (data.message.startsWith('!yes') || data.message.startsWith('!no') || data.message.startsWith('!ay') || data.message.startsWith('!nay')) {
         console.log(`tweet: ${poll_text}`);
         if (poll_text == '') {
             ipc.of.world.emit('message', {
@@ -43,12 +43,12 @@ function handler(data) {
             });
         } else {
             poll.set(data.from_host, data.message[1] == 'y' ? 1 : 0);
-            ipc.of.world.emit('message', {
-                from: NICK,
-                to: data.to,
-                message: 'Your vote has been registered',
-                type: 'reply',
-            });
+            // ipc.of.world.emit('message', {
+            //     from: NICK,
+            //     to: data.to,
+            //     message: 'Your vote has been registered',
+            //     type: 'reply',
+            // });
 
             let yes = 0;
             let no = 0;

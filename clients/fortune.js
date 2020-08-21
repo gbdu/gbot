@@ -12,10 +12,10 @@ ipc.config.retry = 1500;
 // * Handles the action
 function handler(data) {
     if (data.message.startsWith('!fortune')) {
-        exec('fortune', (err, stdout, stderr) => {
+        exec('fortune -s', (err, stdout, stderr) => {
             if (err) {
                 // some err occurred
-                client.say(to, err);
+                // client.say(to, err);
                 console.error(err);
             } else {
                 // the *entire* stdout and stderr (buffered)
