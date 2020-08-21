@@ -1,3 +1,14 @@
+const ipc = require('node-ipc');
+const dotenv = require('dotenv');
+const googleIt = require('google-it');
+
+dotenv.config();
+
+const NICK = process.env.NICK || 'gb3';
+
+ipc.config.id = NICK; // name the socket after the bot
+ipc.config.retry = 1500;
+
 // * Handles the action
 function handler(data) {
     const s = data.message.split(' ').slice(1).join(' ');
@@ -17,24 +28,6 @@ function handler(data) {
             console.log(`Error: ${e}`);
         });
 }
-
-// * Returns a lambda that decides when the handler should be fired
-function trigger() {
-    return (m) => (m.message.startsWith('!g')
-                 || m.message.startsWith(m.client.nick));
-}
-// * imports
-const ipc = require('node-ipc');
-const dotenv = require('dotenv');
-// import googleIt from 'google-it';
-const googleIt = require('google-it');
-
-dotenv.config();
-
-const NICK = process.env.NICK || 'gb3';
-
-ipc.config.id = NICK; // name the socket after the bot
-ipc.config.retry = 1500;
 
 ipc.connectToNet(
     'world',
