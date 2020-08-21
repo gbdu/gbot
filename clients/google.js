@@ -5,6 +5,7 @@ const googleIt = require('google-it');
 dotenv.config();
 
 const NICK = process.env.NICK || 'gb3';
+const NICK = process.env.DEBUG_CHAN || '#test';
 
 ipc.config.id = NICK; // name the socket after the bot
 ipc.config.retry = 1500;
@@ -41,7 +42,7 @@ ipc.connectToNet(
 
             ipc.of.world.emit('message', {
                 from: NICK,
-                to: '#test',
+                to: DEBUG_CHAN,
                 message: 'Google module connected',
                 type: 'reply',
             });
