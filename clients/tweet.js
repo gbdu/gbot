@@ -62,8 +62,6 @@ function handler(data) {
             }
 
             if (yes >= 3) {
-                poll_text = '';
-                poll = new Map();
                 twitter.post('statuses/update', { status: poll_text })
                     .then((tweet) => {
                         ipc.of.world.emit('message', {
@@ -73,6 +71,9 @@ function handler(data) {
                             type: 'reply',
                         });
                     });
+
+                poll_text = '';
+                poll = new Map();
             } else if (no >= 3) {
                 poll_text = '';
                 poll = new Map();
