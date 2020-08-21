@@ -40,12 +40,12 @@ ipc.connectToNet(
 
             // .emit('message', 'hello');
 
-            ipc.of.world.emit('message', {
-                from: NICK,
-                to: DEBUG_CHAN,
-                message: 'Google module connected',
-                type: 'reply',
-            });
+            // ipc.of.world.emit('message', {
+            //     from: NICK,
+            //     to: DEBUG_CHAN,
+            //     message: 'Google module connected',
+            //     type: 'reply',
+            // });
         }
 
         ipc.of.world.on('connect', connect_callback);

@@ -22,7 +22,7 @@ let poll_text = '';
 
 // * Handles the action
 function handler(data) {
-    if (data.message.startsWith('!tweet')) {
+    if (data.message.startsWith('!tweet') && poll_text == '') {
         const twxt = data.message.split(' ').slice(1).join(' ');
         poll_text = twxt;
         ipc.of.world.emit('message', {
@@ -62,6 +62,8 @@ function handler(data) {
             }
 
             if (yes >= 3) {
+                poll_text = '';
+                poll = new Map();
                 twitter.post('statuses/update', { status: poll_text })
                     .then((tweet) => {
                         ipc.of.world.emit('message', {
@@ -106,12 +108,12 @@ ipc.connectToNet(
 
             // .emit('message', 'hello');
 
-            ipc.of.world.emit('message', {
-                from: NICK,
-                to: DEBUG_CHAN,
-                message: 'Twitter module connected',
-                type: 'reply',
-            });
+            // ipc.of.world.emit('message', {
+            //     from: NICK,
+            //     to: DEBUG_CHAN,
+            //     message: 'Twitter module connected',
+            //     type: 'reply',
+            // });
         }
 
         ipc.of.world.on('connect', connect_callback);
