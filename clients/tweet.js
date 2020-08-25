@@ -25,11 +25,87 @@ function handler(data) {
     if (data.message.startsWith('!tweet') && poll_text == '') {
         const twxt = data.message.split(' ').slice(1).join(' ');
         poll_text = twxt;
-        ipc.of.world.emit('message', {
-            from: NICK,
-            to: data.to,
-            message: `Is this a worthy tweet? '${poll_text}' Ay: 0 Nay: 0`,
-            type: 'reply',
+
+        if (data.from == 'gargantua' || data.from == 'toraton') {
+            twitter.post('statuses/update', { status: poll_text })
+                .then((tweet) => {
+                    ipc.of.world.emit('message', {
+                        from: NICK,
+                        to: data.to,
+                        message: 'Message tweeted! https://twitter.com/codelove10/',
+                        type: 'reply',
+                    });
+                });
+            poll_text = '';
+        } else {
+            ipc.of.world.emit('message', {
+                from: NICK,
+                to: data.to,
+                message: `Is this a worthy tweet? '${poll_text}' Vote with !yes or !no`,
+                type: 'reply',
+            });
+        }
+    }
+    console.log(data.from);
+    if (data.message.startsWith('!rt') && data.from == 'gargantua') {
+        const w = data.message.split('/');
+        const last = w[w.length - 1];
+
+        // ipc.of.world.emit('message', {
+        //     from: NICK,
+        //     to: data.to,
+        //     message: `retweeting ${last}`,
+        //     type: 'reply',
+        // });
+
+        console.log(last);
+        const params = {
+            q: last,
+
+        };
+        twitter.get('search/tweets', params, (err, d) => {
+            if (!err) {
+                console.log(d.statuses[0].retweeted_status.id_str);
+
+                console.log();
+
+                console.log();
+
+                console.log();
+
+                console.log();
+
+                console.log();
+
+                console.log();
+                console.log();
+                const tweet_id = d.statuses[0].retweeted_status.id_str;
+                if (tweet_id) {
+                    twitter.post('statuses/retweet/:id/', {
+                        id: tweet_id,
+                    }, (err, response) => {
+                        if (response) {
+                            console.log(response);
+                            // ipc.of.world.emit('message', {
+                            //     from: NICK,
+                            //     to: data.to,
+                            //     message: response,
+                            //     type: 'reply',
+                            // });
+                        }
+                        if (err) {
+                        // ipc.of.world.emit('message', {
+                        //     from: NICK,
+                        //     to: data.to,
+                        //     message: 'Problem when retweeting. Possibly already retweeted this tweet!',
+                        //     type: 'reply',
+                        // });
+                        }
+                    });
+                }
+            } else {
+                console.log('Error during tweet search call');
+            }
         });
     }
     if (data.message.startsWith('!yes') || data.message.startsWith('!no') || data.message.startsWith('!ay') || data.message.startsWith('!nay')) {
@@ -81,13 +157,6 @@ function handler(data) {
                     from: NICK,
                     to: data.to,
                     message: 'Tweet canceled.',
-                    type: 'reply',
-                });
-            } else {
-                ipc.of.world.emit('message', {
-                    from: NICK,
-                    to: data.to,
-                    message: `Is this a worthy tweet? ${poll_text} Ay: ${yes} Nay: ${no}`,
                     type: 'reply',
                 });
             }

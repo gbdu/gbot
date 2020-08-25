@@ -1,8 +1,9 @@
 const ipc = require('node-ipc');
 const dotenv = require('dotenv');
-// const chokidar = require('chokidar');
+const chokidar = require('chokidar');
+const pm2 = require('pm2');
 
-const ps = require('child_process');
+// const ps = require('child_process');
 const fs = require('fs');
 
 dotenv.config();
@@ -32,6 +33,7 @@ ipc.serveNet(
                 ipc.server.broadcast('message', data);
             },
         );
+
         ipc.server.on(
             '!',
             (data, socket) => {
@@ -53,26 +55,38 @@ ipc.serveNet(
 // * TODO Manage module sub processes
 function add_module(filename) {
     console.log(`adding ${filename}`);
-
-    function launch(m) {
-        if (m.err) {
-            console.log(m.err);
-        } else {
-            console.log(m.stdout);
-        }
-    }
-
-    console.log(ps.exec(`node ./${filename}`, launch));
 }
 
 // Initialize watcher.
-// const watcher = chokidar.watch('clients/', { persistent: true });
+const watcher = chokidar.watch('clients/', { persistent: true });
 
-// // Add event listeners.
-// watcher
-//     .on('add', add_module)
-//     .on('change', (path) => console.log(`File ${path} has been changed`))
-//     .on('unlink', (path) => console.log(`File ${path} has been removed`));
+// Add event listeners.
+watcher
+    .on('add', add_module)
+    .on('change', (path) => console.log(`File ${path} has been changed`))
+    .on('unlink', (path) => console.log(`File ${path} has been removed`));
+
+pm2.connect(true, (err) => {
+    if (err) {
+        console.error(err);
+        process.exit(2);
+    }
+
+    // pm2.stop('app-name', (err, proc) => {
+    // })
+
+    // pm2.restart('app-name', (err, proc) => {
+    // })
+
+    // pm2.start({
+    //     script: 'clients/irc.js', // Script to be run
+    //     exec_mode: 'fork', // Allows your app to be clustered
+    //     max_memory_restart: '200M', // Optional: Restarts your app if it reaches 100Mo
+    // }, (err, apps) => {
+    //     pm2.disconnect(); // Disconnects from PM2
+    //     if (err) throw err;
+    // });
+});
 
 // * Handle error
 ipc.server.on('error', (err) => ipc.log('Got an ERROR!', err));

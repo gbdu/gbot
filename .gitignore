@@ -3,4 +3,4 @@ old
 node_modules/
 nohup.out
 .env
-*.db
+*.dbtrans

@@ -14,18 +14,33 @@ ipc.config.id = NICK; // name the socket after the bot
 
 ipc.config.retry = 1500;
 
-function run_irc(world) {
+function run_discord(world) {
     bot.login(process.env.DISCORD_TOKEN);
 
     bot.on('message', (msg) => {
-        if (msg.content.startsWith('!')) {
-            const message = {
-                message: msg.content,
-                from: msg.author.username,
-                to: msg.channel.name,
-            };
-            console.log(message);
-            world.emit('!', message);
+        try {
+            if (false || msg.content.startsWith('!irc')) {
+                const cname = msg.content.split(' ');
+
+                const message = {
+                    message: msg.content,
+                    from: NICK,
+                    to: `#${cname[1]}`,
+                    type: 'reply',
+                };
+                console.log(message);
+                world.emit('message', message);
+            } else {
+                const message = {
+                    message: msg.content,
+                    from: msg.author.username,
+                    to: msg.channel.name,
+                };
+                console.log(message);
+                world.emit('!', message);
+            }
+        } catch (e) {
+            console.log(e);
         }
     });
 }
@@ -33,7 +48,7 @@ function run_irc(world) {
 function callback() {
     function connect_callback() {
         ipc.log('## connected to world ##', ipc.config.delay);
-        run_irc(ipc.of.world);
+        run_discord(ipc.of.world);
     }
     function disconnect_callback() {
         client.disconnect('No connection to process supervisor');
@@ -47,7 +62,11 @@ function callback() {
             //            client.say(data.to, data.message);
             //          bot.channels.get('#codelove').send('Hello here!');
             const channel = bot.channels.cache.find((channel) => channel.name === data.to);
-            channel.send(data.message);
+            try {
+                channel.send(data.message);
+            } catch (e) {
+                console.log(e);
+            }
         } else if (data.message.startsWith('!')) {
             ipc.of.world.emit('!', data);
         }

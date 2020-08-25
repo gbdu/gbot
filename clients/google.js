@@ -12,7 +12,7 @@ ipc.config.retry = 1500;
 
 // * Handles the action
 function handler(data) {
-    if (data.message.startsWith('!g')) {
+    if (data.message.startsWith('!g') || data.message.startsWith(NICK) || data.message.startsWith(`@${NICK}`)) {
         const s = data.message.split(' ').slice(1).join(' ');
 
         googleIt({ query: s })

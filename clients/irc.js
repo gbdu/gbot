@@ -53,7 +53,11 @@ function callback() {
         if (data.from == NICK && data.type == 'reply') {
         // a module wants us to send this to IRC
             data.type = '';
-            client.say(data.to, data.message);
+            try {
+                client.say(data.to, data.message);
+            } catch (err) {
+                console.log(err);
+            }
         } else if (data.message.startsWith('!')) {
             ipc.of.world.emit('!', data);
         }
