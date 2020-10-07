@@ -4,14 +4,21 @@
   "description": "irc bot for googlin'",
   "main": "index.js",
   "dependencies": {
+    "axios": "^0.20.0",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
     "google-it": "^1.5.0",
+    "google-search-results-nodejs": "^2.0.0",
     "irc": "^0.5.2",
-    "nedb": "^1.8.0"
+    "nedb": "^1.8.0",
+    "redis": "^3.0.2"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0",
-    "babel-register": "^6.26.0"
+    "babel-register": "^6.26.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

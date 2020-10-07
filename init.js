@@ -2,40 +2,45 @@ import irc from 'irc';
 import DataStore from 'nedb';
 import dotenv from 'dotenv';
 
-function init_config(){
-  let result = dotenv.config();
-  
-  if(result.error){
-    console.log("No .env file found");
+const redis = require('redis');
+
+function init_config() {
+  const result = dotenv.config();
+
+  if (result.error) {
+    console.log('No .env file found');
     process.exit(1);
   }
 
   return result;
 }
 
-function init_db(){
-  // TODO error handling for db loading
-  var db = new DataStore({ filename: 'gb3.db', autoload: true });
+function init_db() {
+  const rclient = redis.createClient(process.env.REDIS_SERVER, { password: process.env.REDIS_PASSWORD });
 
-  if(!db){
-    console.log("Can't init db");
-    process.exit(1);  
-  }
-  // Use a unique constraint for the message to avoid duplicates
-  db.ensureIndex({ fieldName: 'content', unique: true });
-  return db;
+  rclient.on('error', (error) => {
+    console.error(error);
+  });
+
+  rclient.set('key', 'value', redis.print);
+  rclient.get('key', redis.print);
+
+  return rclient;
 }
 
-function init_irc(){
+function init_irc() {
   // Setup irc client with info from .env
-  var client = new irc.Client(
-    process.env.SERVER || "irc.slashsnet.org",
-    process.env.NICK || "gb3", {
-      channels: [process.env.CHANNELS] || ["#test"],
-      userName: process.env.NICK || "gb3",
+  const client = new irc.Client(
+    process.env.SERVER || 'irc.slashnet.org',
+    process.env.NICK || 'gb3', {
+      channels: [process.env.CHANNELS] || ['#test'],
+      userName: process.env.NICK || 'gb3',
+      port: process.env.PORT || 6667,
       password: process.env.PASSWORD,
-      debug: process.env.QUIET ? false : true,
-      showErrors: process.env.QUIET ? false : true, });
+      debug: !process.env.QUIET,
+      showErrors: !process.env.QUIET,
+    },
+  );
 
   return client;
 }
@@ -43,4 +48,3 @@ function init_irc(){
 exports.init_config = init_config;
 exports.init_db = init_db;
 exports.init_irc = init_irc;
-
