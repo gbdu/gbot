@@ -17,11 +17,11 @@ let lastmsg = '';
 const commands = [
     {
         trigger: (message) => (message.startsWith('!fortune')),
-        handler: handle_fortune,
+        handler: handle_fortune.handle_fortune,
     },
     {
         trigger: (message) => (message.startsWith('!t') && !message.startsWith('!tell')),
-        handler: handle_translate,
+        handler: handle_translate.handle_translate,
     },
     {
         trigger: (message) => (message.startsWith('!last')),
