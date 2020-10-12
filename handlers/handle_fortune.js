@@ -23,5 +23,4 @@ function handle_fortune({client, to, message}) {
     });  
 }
 
-
 exports.handle_fortune = handle_fortune

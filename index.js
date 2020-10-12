@@ -8,8 +8,8 @@ const subscriber_db = db.duplicate();
 const client = init.init_irc();
 
 // TODO move these to seperate modules
-const handle_fortune = require('./handlers/handle_fortune');
-const handle_translate = require('./handlers/handle_translate');
+const handle_fortune = require('./handlers/handle_fortune').handle_fortune;
+const handle_translate = require('./handlers/handle_translate').handle_translate;
 
 
 let lastmsg = '';
