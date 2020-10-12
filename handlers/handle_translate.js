@@ -1,6 +1,7 @@
-import { exec, spawn } from 'child_process';
+const ps = require('child_process');
 
-export default function handle_translate({ message, client, to }) {
+
+function handle_translate({ message, client, to }) {
     const words = message.split(' ');
 
     try {
@@ -15,7 +16,7 @@ export default function handle_translate({ message, client, to }) {
             text = words.slice(1);
         }
 
-        const child = spawn('trans', ['-brief', lang, '--', text.join(' ')]);
+        const child = ps.spawn('trans', ['-brief', lang, '--', text.join(' ')]);
 
         child.on('error', (err) => {
             console.log(err);

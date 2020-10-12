@@ -1,32 +1,23 @@
-import { exec, spawn } from 'child_process';
-import handle_google from './handlers/handle_google';
-import handle_fortune from './handlers/handle_fortune';
-import handle_tell from './handlers/handle_tell';
-import handle_translate from './handlers/handle_translate';
-
-import { init_config, init_db, init_irc } from './init';
-
-const result = init_config();
-const db = init_db();
-const client = init_irc();
-
 const fs = require('fs');
+
+const init = require('./init')
+
+const result = init.init_config();
+const db = init.init_db();
+const subscriber_db = db.duplicate();
+const client = init.init_irc();
+
+// TODO move these to seperate modules
+const handle_fortune = require('./handlers/handle_fortune');
+const handle_translate = require('./handlers/handle_translate');
+
 
 let lastmsg = '';
 
 const commands = [
     {
-        trigger: (message) => (message.startsWith('!g')
-                         || message.startsWith(client.nick)),
-        handler: handle_google,
-    },
-    {
         trigger: (message) => (message.startsWith('!fortune')),
         handler: handle_fortune,
-    },
-    {
-        trigger: (message) => (message.startsWith('!tell')),
-        handler: handle_tell,
     },
     {
         trigger: (message) => (message.startsWith('!t') && !message.startsWith('!tell')),
@@ -50,13 +41,25 @@ function handle_last({ to, db, client }) {
             lastlog.write(`${r}\n`);
         });
 
-        exec('./upload_last.sh', (err, stdout, stderr) => {
-            if (stdout) {
-                client.say(to, stdout);
-            }
-        });
+        // exec('./upload_last.sh', (err, stdout, stderr) => {
+        //     if (stdout) {
+        //         client.say(to, stdout);
+        //     }
+        // });
     });
 }
+
+
+subscriber_db.on("message", function(channel, msg){
+    msg = JSON.parse(msg);
+    console.log(msg);
+    if(msg.from == client.nick){
+        client.say(msg.to, msg.message);
+    }
+});
+
+// subscriber_db.psubscribe("pmessage");
+subscriber_db.subscribe("msg");
 
 client.addListener('message', (from, to, message) => {
     if (!process.env.QUIET) {
@@ -64,6 +67,7 @@ client.addListener('message', (from, to, message) => {
         const timestamp = new Date().toUTCString();
 
         db.rpush(to, `[${timestamp}] ${from}: ${message}`);
+        db.publish("msg", JSON.stringify({to, from, message, type:"irc"}));
     }
 
     commands.forEach((c) => {
@@ -91,9 +95,9 @@ client.addListener('join', (channel, who) => {
 
 });
 
-// client.addListener('error', (message) => {
-//     console.log('error: ', message);
-// });
+client.addListener('error', (message) => {
+    console.log('error: ', message);
+});
 
 // const express = require('express');
 
