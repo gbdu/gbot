@@ -30,3 +30,5 @@ function handle_translate({ message, client, to }) {
         console.log(error);
     }
 }
+
+exports.handle_translate = handle_translate
