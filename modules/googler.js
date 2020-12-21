@@ -26,12 +26,15 @@ db.on("message", function(channel, msg){
                 try {
                     let results = body.results[query][1].results;
                     
+                    let link = "";
                     
                     for (let i = 0; i < results.length && i < max_results; i++) {
+                        link = results[i].link.split("#:~:text");
+                        
                         let reply_msg = {
                             from: process.env.NICK,
                             to: msg.to,
-                            message: results[i].title + " " + results[i].link,
+                            message: results[i].title + " " + link[0],
                             type: "reply",
                         };
 
